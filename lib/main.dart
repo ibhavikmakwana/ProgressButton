@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new ProgressButtonApp());
 
-class MyApp extends StatelessWidget {
+class ProgressButtonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -12,26 +12,33 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Progress Button'),
+      home: new ProgressButton(title: 'Progress Button'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class ProgressButton extends StatefulWidget {
+  ProgressButton({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _ProgressButtonState createState() => new _ProgressButtonState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class _ProgressButtonState extends State<ProgressButton>
+    with TickerProviderStateMixin {
   int _state = 0;
   Animation _animation;
   AnimationController _controller;
   GlobalKey _globalKey = GlobalKey();
   double _width = double.infinity;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,38 +47,44 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         title: new Text(widget.title),
       ),
       body: new Center(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: new PhysicalModel(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16.0,
+            right: 16.0,
+          ),
+          child: new PhysicalModel(
+            elevation: 8.0,
+            shadowColor: Colors.lightGreenAccent,
+            color: Colors.lightGreen,
+            borderRadius: BorderRadius.circular(25.0),
+            child: Container(
+              key: _globalKey,
+              height: 48.0,
+              width: _width,
+              child: new RaisedButton(
+                padding: EdgeInsets.all(0.0),
+                child: setUpButtonChild(),
+                onPressed: () {
+                  setState(() {
+                    if (_state == 0) {
+                      animateButton();
+                    }
+                  });
+                },
+                elevation: 4.0,
                 color: Colors.lightGreen,
-                borderRadius: BorderRadius.circular(25.0),
-                child: new MaterialButton(
-                  child: setUpButtonChild(),
-                  onPressed: () {
-                    setState(() {
-                      if (_state == 0) {
-                        animateButton();
-                      }
-                    });
-                  },
-                  elevation: 4.0,
-                  minWidth: _width,
-                  height: 48.0,
-                  color: Colors.lightGreen,
-                  key: _globalKey,
-                ),
               ),
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget setUpButtonChild() {
+  ///
+  ///
+  ///
+  setUpButtonChild() {
     if (_state == 0) {
       return new Text(
         "Click Here",
@@ -81,8 +94,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         ),
       );
     } else if (_state == 1) {
-      return CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      return SizedBox(
+        height: 36.0,
+        width: 36.0,
+        child: CircularProgressIndicator(
+          value: null,
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
       );
     } else {
       return Icon(Icons.check, color: Colors.white);
