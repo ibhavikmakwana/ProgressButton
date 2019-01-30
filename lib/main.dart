@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-void main() => runApp(new ProgressButtonApp());
+void main() => runApp(ProgressButtonApp());
 
 class ProgressButtonApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Progress Button',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new ProgressButton(title: 'Progress Button'),
+      home: ProgressButton(title: 'Progress Button'),
     );
   }
 }
@@ -23,7 +23,7 @@ class ProgressButton extends StatefulWidget {
   final String title;
 
   @override
-  _ProgressButtonState createState() => new _ProgressButtonState();
+  _ProgressButtonState createState() => _ProgressButtonState();
 }
 
 class _ProgressButtonState extends State<ProgressButton>
@@ -32,7 +32,7 @@ class _ProgressButtonState extends State<ProgressButton>
   Animation _animation;
   AnimationController _controller;
   GlobalKey _globalKey = GlobalKey();
-  double _width = double.infinity;
+  double _width = double.maxFinite;
 
   @override
   void dispose() {
@@ -42,37 +42,44 @@ class _ProgressButtonState extends State<ProgressButton>
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new Center(
+      body: Center(
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
+            left: 16,
+            right: 16,
           ),
-          child: new PhysicalModel(
-            elevation: 8.0,
-            shadowColor: Colors.lightGreenAccent,
-            color: Colors.lightGreen,
-            borderRadius: BorderRadius.circular(25.0),
-            child: Container(
-              key: _globalKey,
-              height: 48.0,
-              width: _width,
-              child: new RaisedButton(
-                padding: EdgeInsets.all(0.0),
-                child: setUpButtonChild(),
-                onPressed: () {
-                  setState(() {
-                    if (_state == 0) {
-                      animateButton();
-                    }
-                  });
-                },
-                elevation: 4.0,
-                color: Colors.lightGreen,
+          child: Align(
+            alignment: Alignment.center,
+            child: PhysicalModel(
+              elevation: 8,
+              shadowColor: Colors.lightGreenAccent,
+              color: Colors.lightGreen,
+              borderRadius: BorderRadius.circular(25),
+              child: Container(
+                key: _globalKey,
+                height: 48,
+                width: _width,
+                child: RaisedButton(
+                  animationDuration: Duration(milliseconds: 1000),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  padding: EdgeInsets.all(0),
+                  child: setUpButtonChild(),
+                  onPressed: () {
+                    setState(() {
+                      if (_state == 0) {
+                        animateButton();
+                      }
+                    });
+                  },
+                  elevation: 4,
+                  color: Colors.lightGreen,
+                ),
               ),
             ),
           ),
@@ -86,17 +93,17 @@ class _ProgressButtonState extends State<ProgressButton>
   ///
   setUpButtonChild() {
     if (_state == 0) {
-      return new Text(
+      return Text(
         "Click Here",
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 16.0,
+          fontSize: 16,
         ),
       );
     } else if (_state == 1) {
       return SizedBox(
-        height: 36.0,
-        width: 36.0,
+        height: 36,
+        width: 36,
         child: CircularProgressIndicator(
           value: null,
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -112,10 +119,11 @@ class _ProgressButtonState extends State<ProgressButton>
 
     _controller =
         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
-    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller)
+
+    _animation = Tween(begin: 0.0, end: 1).animate(_controller)
       ..addListener(() {
         setState(() {
-          _width = initialWidth - ((initialWidth - 48.0) * _animation.value);
+          _width = initialWidth - ((initialWidth - 48) * _animation.value);
         });
       });
     _controller.forward();
